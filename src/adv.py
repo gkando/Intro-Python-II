@@ -1,4 +1,6 @@
 from room import Room
+from player import Player
+from textwrap import dedent
 
 # Declare all the rooms
 
@@ -38,6 +40,7 @@ room['treasure'].s_to = room['narrow']
 #
 
 # Make a new player object that is currently in the 'outside' room.
+p = Player('outside')
 
 # Write a loop that:
 #
@@ -49,3 +52,31 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+def main():
+    print(f"You are located {p.location}.\n{room[p.location].description}.")
+        
+    while True:
+        movement = input("In which direction would you like to move [N] North  [S] South   [E] East    [W] West [Q] Quit?\n").lower()
+
+        try:
+            if not movement.isalpha() or not all(c in "nsewq" for c in movement):
+                raise ValueError
+        except ValueError:
+            print('Movement is not allowed.')
+
+        if movement == 'q':
+            break
+
+        if not hasattr(room[p.location], movement + '_to'):
+            print('You just walked in to a wall! Try again!')
+            continue
+
+        else:
+            d = getattr(room[p.location], movement + '_to')
+            print(f'You are now in then {d.name}.')
+            p.location = d.name.lower().replace("grand ", "")
+
+if __name__== "__main__":
+    main()
+
