@@ -1,5 +1,6 @@
 from room import Room
 from player import Player
+from item import Item
 from textwrap import dedent
 
 # Declare all the rooms
@@ -35,6 +36,12 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+
+item = {
+    'keys':    Item("Keys", "Car keys."),
+}
+room['foyer'].add_item = item['keys']
+
 #
 # Main
 #
@@ -54,13 +61,13 @@ p = Player('outside')
 # If the user enters "q", quit the game.
 
 def main():
-    print(f"You are located {p.location}.\n{room[p.location].description}.")
+    print(f"You are located {p.current_room}.\n{room[p.current_room].description}.")
         
     while True:
-        movement = input("In which direction would you like to move [N] North  [S] South   [E] East    [W] West [Q] Quit?\n").lower()
+        movement = input("In which direction would you like to move:\n\t[N] North\n[W] West\t[E] East\n\t[S] South\n[Q] Quit\n[I]  View Items in Room").lower()
 
         try:
-            if not movement.isalpha() or not all(c in "nsewq" for c in movement):
+            if not movement.isalpha() or not all(c in "nsewqi" for c in movement):
                 raise ValueError
         except ValueError:
             print('Movement is not allowed.')
@@ -68,15 +75,33 @@ def main():
         if movement == 'q':
             break
 
-        if not hasattr(room[p.location], movement + '_to'):
+        if movement == 'i':
+            print('i')
+            continue
+
+        if not hasattr(room[p.current_room], movement + '_to'):
             print('You just walked in to a wall! Try again!')
             continue
 
         else:
-            d = getattr(room[p.location], movement + '_to')
+            d = getattr(room[p.current_room], movement + '_to')
             print(f'You are now in then {d.name}.')
-            p.location = d.name.lower().replace("grand ", "")
+            p.current_room = d.name.lower().replace("grand ", "")
+
+        
 
 if __name__== "__main__":
     main()
 
+
+# Add the ability to add items to rooms.
+
+# The Room class should be extended with a list that holds the Items
+# that are currently in that room.
+
+# Add functionality to the main loop that prints out all the items that are
+# visible to the player when they are in that room.
+
+# Add capability to add Items to the player's inventory. The inventory can
+# also be a list of items "in" the player, similar to how Items can be in a
+# Room.
